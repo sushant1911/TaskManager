@@ -1,6 +1,6 @@
 # TaskManager
 SpringBoot application  for creating  task  as all task management related work .
-outline the steps and components you'll need to implement in your Spring Boot application to achieve the desired functionality:
+Outline the steps and components you'll need to implement in your Spring Boot application to achieve the desired functionality:
 
 Receive POST Request to Create a Task:
 
