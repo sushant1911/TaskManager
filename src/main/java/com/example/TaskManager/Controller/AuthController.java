@@ -4,6 +4,7 @@ import com.example.TaskManager.DTO.TaskManagerResponse;
 import com.example.TaskManager.model.User;
 import com.example.TaskManager.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@EnableCaching
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -20,7 +22,7 @@ public class AuthController {
     public ResponseEntity<TaskManagerResponse> signUp(@RequestBody User user){
         return ResponseEntity.ok(authService.sigUp(user));
     }
-    @PostMapping("/signin")
+    @PostMapping("/sign-in")
     public ResponseEntity<TaskManagerResponse> signIn(@RequestBody User signInRequest){
         return ResponseEntity.ok(authService.signIn(signInRequest));
     }

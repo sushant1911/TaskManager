@@ -1,16 +1,13 @@
 package com.example.TaskManager.service;
 
 import com.example.TaskManager.DTO.TaskManagerResponse;
-import com.example.TaskManager.Repository.UserRepository;
+import com.example.TaskManager.Exception.UserNotFoundException;
 import com.example.TaskManager.model.User;
 import com.example.TaskManager.utills.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 
 @Service
 public class AuthService {
@@ -51,14 +48,15 @@ public class AuthService {
         TaskManagerResponse response = new TaskManagerResponse();
 
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword()));
-            User tempUser = userService.getUserByEmail(user.getEmail());
+            // authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+            User tempUser =  userService.getUserByEmail(user.getEmail());
             System.out.println("USER IS: "+ tempUser);
-            var jwt = jwtUtils.generateToken(tempUser);
-            var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), tempUser);
+            if(tempUser.getEmail()!=null){
+              String jwt = jwtUtils.generateToken(tempUser);
             response.setStatusCode(200);
             response.setData(jwt);
-            response.setMessage("Successfully Signed In");
+            response.setMessage("Successfully Signed In");}
+            else throw new UserNotFoundException("User not found");
         }catch (Exception e){
             response.setStatusCode(500);
             response.setMessage(e.getMessage());
