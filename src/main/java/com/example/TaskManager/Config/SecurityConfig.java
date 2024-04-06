@@ -31,10 +31,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request -> request.requestMatchers("/user/**", "/**").permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(
+                .authorizeHttpRequests(request -> request.requestMatchers("/auth/**", "/public/**").permitAll()
+                        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/user/**").hasAnyAuthority("user")
+                        .requestMatchers("/adminuser/**").hasAnyAuthority("USER", "ADMIN").anyRequest().authenticated())
+                        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .authenticationProvider(authenticationProvider()).addFilterBefore(
                         jwtAuthFIlter, UsernamePasswordAuthenticationFilter.class
                 );
         return httpSecurity.build();
