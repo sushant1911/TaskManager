@@ -1,6 +1,7 @@
 package com.example.TaskManager.Controller;
 
 import com.example.TaskManager.DTO.TaskManagerResponse;
+import com.example.TaskManager.DTO.UserDTO;
 import com.example.TaskManager.model.User;
 import com.example.TaskManager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,12 @@ public class UserController {
     @GetMapping("/getUser/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         final User userByName = userService.getUserByEmail(email);
-        if (userByName != null) {
-         return TaskManagerResponse.generateResponse( "User found",HttpStatus.OK,userByName);
+        UserDTO userDTO=new UserDTO();
+        userDTO.setName(userByName.getUsername());
+        userDTO.setId(userByName.getId());
+        userDTO.setEmail(userByName.getEmail());
+        if (userDTO != null) {
+         return TaskManagerResponse.generateResponse( "User found",HttpStatus.OK,userDTO);
 
         } else {
             return TaskManagerResponse.generateResponse ("User not found with name: " + email,HttpStatus.NOT_FOUND, null);
