@@ -1,8 +1,10 @@
 package com.example.TaskManager.Controller;
 
+import com.example.TaskManager.DTO.TaskManagerResponse;
 import com.example.TaskManager.model.User;
 import com.example.TaskManager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user")
+@EnableCaching
 public class UserController {
 
     @Autowired
@@ -21,15 +24,17 @@ public class UserController {
     {
         return "welcome";
     }
+
+
     @GetMapping("/getUser/{email}")
-    public ResponseEntity<?> getUserByName(@PathVariable String email)
-    {
-        System.out.println("find");
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         final User userByName = userService.getUserByEmail(email);
         if (userByName != null) {
-            return ResponseEntity.ok(userByName);
+         return TaskManagerResponse.generateResponse( "User found",HttpStatus.OK,userByName);
+
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with name: " + email);
+            return TaskManagerResponse.generateResponse ("User not found with name: " + email,HttpStatus.NOT_FOUND, null);
+
         }
     }
 }

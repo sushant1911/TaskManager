@@ -1,14 +1,18 @@
 package com.example.TaskManager.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 public class TaskManagerResponse {
-    private int statusCode;
-    private String message;
-    private Object data;
+    public static ResponseEntity<Object> generateResponse(String message, HttpStatus status, Object responseObj
+    ) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("message", message);
+        map.put("status", status.value());
+        map.put("data", responseObj);
+        return new ResponseEntity<Object>(map, status);
+    }
 }
