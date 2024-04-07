@@ -1,67 +1,61 @@
 package com.example.TaskManager.service;
 
-import com.example.TaskManager.DTO.TaskManagerResponse;
 import com.example.TaskManager.Exception.UserNotFoundException;
 import com.example.TaskManager.model.User;
 import com.example.TaskManager.utills.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private JWTUtils jwtUtils;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final JWTUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
-    public TaskManagerResponse sigUp(User request) {
-        TaskManagerResponse response = new TaskManagerResponse();
+    @Autowired
+    public AuthService(UserService userService, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.jwtUtils = jwtUtils;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+    }
+
+    public User signUp(User request) {
+        User newUser = new User();
+        newUser.setUsername(request.getUsername());
+        newUser.setEmail(request.getEmail());
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        newUser.setRole(request.getRole() == null ? "user" : request.getRole());
+
         try {
-            User tempUser = new User();
-            tempUser.setUsername(request.getUsername());
-            tempUser.setEmail(request.getEmail());
-            tempUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            if (request.getRole() == null)
-                tempUser.setRole("user");
-            else
-                tempUser.setRole(request.getRole());
-            final User saveUser = userService.addUser(tempUser);
-            if (saveUser != null && saveUser.getId() > 0) {
-                response.setData(saveUser);
-                response.setStatusCode(200);
-                response.setMessage("User Saved Successfully");
+            User savedUser = userService.addUser(newUser);
+            if (savedUser != null && savedUser.getId() > 0) {
+                return savedUser;
+            } else {
+                throw new UserNotFoundException("Failed to save user");
             }
         } catch (Exception e) {
-            response.setStatusCode(500);
-            response.setMessage(e.getMessage());
+            throw new UserNotFoundException("Failed to save user", e);
         }
-        return response;
     }
-    public TaskManagerResponse signIn(User user){
-        TaskManagerResponse response = new TaskManagerResponse();
 
+    public String signIn(User user) {
         try {
-            // authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-            User tempUser =  userService.getUserByEmail(user.getEmail());
-            System.out.println("USER IS: "+ tempUser);
-            if(tempUser.getEmail()!=null){
-              String jwt = jwtUtils.generateToken(tempUser);
-            response.setStatusCode(200);
-            response.setData(jwt);
-            response.setMessage("Successfully Signed In");}
-            else throw new UserNotFoundException("User not found");
-        }catch (Exception e){
-            response.setStatusCode(500);
-            response.setMessage(e.getMessage());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+            User authenticatedUser = userService.getUserByEmail(user.getEmail());
+            if (authenticatedUser != null) {
+                String jwt = jwtUtils.generateToken(authenticatedUser);
+                return jwt;
+            } else {
+                throw new UserNotFoundException("User not found");
+            }
+        } catch (Exception e) {
+            throw new UserNotFoundException("Authentication failed", e);
         }
-        return response;
     }
-
 }

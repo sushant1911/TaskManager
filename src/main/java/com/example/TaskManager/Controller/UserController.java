@@ -27,14 +27,14 @@ public class UserController {
 
 
     @GetMapping("/getUser/{email}")
-    public ResponseEntity<TaskManagerResponse> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         final User userByName = userService.getUserByEmail(email);
         if (userByName != null) {
-            TaskManagerResponse response = new TaskManagerResponse(HttpStatus.OK.value(), "User found", userByName);
-            return ResponseEntity.ok(response);
+         return TaskManagerResponse.generateResponse( "User found",HttpStatus.OK,userByName);
+
         } else {
-            TaskManagerResponse response = new TaskManagerResponse(HttpStatus.NOT_FOUND.value(), "User not found with name: " + email, null);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return TaskManagerResponse.generateResponse ("User not found with name: " + email,HttpStatus.NOT_FOUND, null);
+
         }
     }
 }

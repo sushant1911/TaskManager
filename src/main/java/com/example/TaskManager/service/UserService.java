@@ -4,8 +4,7 @@ import com.example.TaskManager.Repository.UserRepository;
 import com.example.TaskManager.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.data.redis.core.HashOperations; // Import HashOperations
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
