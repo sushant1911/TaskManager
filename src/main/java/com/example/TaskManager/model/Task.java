@@ -6,12 +6,13 @@ import lombok.Data;
 import jakarta.persistence.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @Entity
 @Table(name = "tasks")
-public class Task {
+public class Task  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
