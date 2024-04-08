@@ -2,6 +2,7 @@ package com.example.TaskManager.Controller;
 
 import com.example.TaskManager.DTO.TaskManagerResponse;
 import com.example.TaskManager.DTO.TaskResponseDTO;
+import com.example.TaskManager.Enum.Status;
 import com.example.TaskManager.model.Task;
 import com.example.TaskManager.model.User;
 import com.example.TaskManager.service.TaskService;
@@ -32,14 +33,15 @@ public class TaskController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         task.setUser(user);
+        task.setStatus(Status.IN_PROGRESS);
         task.setCreatedAt(new Date());
         task.setUpdatedAt(new Date());
         final Task createdTask = taskService.createTask(task);
         return TaskManagerResponse.generateResponse("Successfully created Task", HttpStatus.CREATED, createdTask);
     }
 
-    @GetMapping("/getAllTasks")
-    public ResponseEntity<Object> getAllTasks() {
+    @GetMapping("/getAllTasksByUserId")
+    public ResponseEntity<Object> getAllTasksByUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         List<Task> tasks = taskService.getAllTasksByUserId(user.getId());

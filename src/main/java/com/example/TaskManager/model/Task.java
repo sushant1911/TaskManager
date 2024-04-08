@@ -2,11 +2,10 @@ package com.example.TaskManager.model;
 
 import com.example.TaskManager.Enum.Priority;
 import com.example.TaskManager.Enum.Status;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import jakarta.persistence.*;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.Date;
 
 @Data
@@ -29,6 +28,7 @@ public class Task  {
     private String description;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "MMM d, yyyy hh:mm:ss a")
     private Date deadline;
 
     @Enumerated(EnumType.STRING)
