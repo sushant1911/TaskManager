@@ -4,14 +4,15 @@ import com.example.TaskManager.DTO.TaskManagerResponse;
 import com.example.TaskManager.DTO.UserDTO;
 import com.example.TaskManager.model.User;
 import com.example.TaskManager.service.UserService;
+import com.example.TaskManager.utills.JWTUtils;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -20,6 +21,7 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
     @GetMapping("/welcome")
     public String welcome()
     {
@@ -42,4 +44,6 @@ public class UserController {
 
         }
     }
+
+
 }

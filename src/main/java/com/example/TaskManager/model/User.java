@@ -1,5 +1,8 @@
 package com.example.TaskManager.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,13 +24,14 @@ public class User implements UserDetails, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotNull(message = "user name cannot be null")
     @Column(nullable = false)
     private String username;
 
+    @Pattern(regexp = "^(?=.*[!@#$%^&*()-+=])(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z]).{8,}$", message = "Password must be at least 8 characters long and contain at least one special character, one digit, one uppercase letter, and one lowercase letter.")
     @Column(nullable = false)
     private String password;
-
+    @Email
     @Column(nullable = false)
     private String email;
 

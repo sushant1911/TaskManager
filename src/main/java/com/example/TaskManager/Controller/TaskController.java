@@ -5,7 +5,9 @@ import com.example.TaskManager.DTO.TaskResponseDTO;
 import com.example.TaskManager.Enum.Status;
 import com.example.TaskManager.model.Task;
 import com.example.TaskManager.model.User;
+import com.example.TaskManager.service.KafkaMessagePublisher;
 import com.example.TaskManager.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ import java.util.List;
 public class TaskController {
     @Autowired
     TaskService taskService;
+    @Autowired
+    KafkaMessagePublisher kafkaMessagePublisher;
 
     @GetMapping("/welcome")
     public String welcome() {
@@ -29,15 +33,15 @@ public class TaskController {
     }
 
     @PostMapping("/createTask")
-    public ResponseEntity<Object> createTask(@RequestBody Task task) {
+    public ResponseEntity<Object> createTask(@RequestBody  Task task) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         task.setUser(user);
         task.setStatus(Status.IN_PROGRESS);
         task.setCreatedAt(new Date());
         task.setUpdatedAt(new Date());
-        final Task createdTask = taskService.createTask(task);
-        return TaskManagerResponse.generateResponse("Successfully created Task", HttpStatus.CREATED, createdTask);
+        kafkaMessagePublisher.sendMessage(task);
+        return TaskManagerResponse.generateResponse("Successfully created Task", HttpStatus.CREATED, task);
     }
 
     @GetMapping("/getAllTasksByUserId")
@@ -60,7 +64,7 @@ public class TaskController {
             taskResponseDTO.setStatus(task.getStatus());
             taskResponseDTO.setCreatedAt(task.getCreatedAt());
             taskResponseDTO.setUpdatedAt(task.getUpdatedAt());
-            taskResponseDTO.setUserId(task.getUser().getId()); // Add only user ID, not the whole user object
+            taskResponseDTO.setEmail(task.getUser().getEmail()); // Add only user ID, not the whole user object
             taskResponseDTOs.add(taskResponseDTO);
         }
 

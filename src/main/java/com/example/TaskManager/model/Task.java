@@ -2,7 +2,9 @@ package com.example.TaskManager.model;
 
 import com.example.TaskManager.Enum.Priority;
 import com.example.TaskManager.Enum.Status;
+import com.example.TaskManager.anotation.DateValidation;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import jakarta.persistence.*;
 
@@ -20,15 +22,16 @@ public class Task  {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
+    @NotNull(message = "title name cannot be null")
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
+    @NotNull(message = "deadline name cannot be null")
     @Column(nullable = false)
-    @JsonFormat(pattern = "MMM d, yyyy hh:mm:ss a")
+//    @JsonFormat(pattern = "MMM d, yyyy hh:mm:ss a")
+    @DateValidation
     private Date deadline;
 
     @Enumerated(EnumType.STRING)
@@ -36,7 +39,7 @@ public class Task  {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
+    @NotNull(message = "createdAt name cannot be null")
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
